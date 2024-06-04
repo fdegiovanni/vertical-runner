@@ -116,6 +116,7 @@ export default class Game extends Phaser.Scene {
     const clickedRight = e.x > this.game.config.width / 2;
     const speedX = gameOptions.heroSpeed * (clickedRight ? 1 : -1);
     this.player.setVelocityX(speedX);
+    this.player.flipX = !clickedRight;
 
     if (this.firstMove) {
       this.firstMove = false;
