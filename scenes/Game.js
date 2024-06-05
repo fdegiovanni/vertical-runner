@@ -13,18 +13,21 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(400, 300, "sky").setScale(2);
+    this.centerX = this.game.config.width / 2;
+    this.centerY = this.game.config.height / 2;
+    this.background = this.add.image(this.centerX, this.centerY, "sky");
+    this.background.displayWidth = this.game.config.width;
+    this.background.displayHeight = this.game.config.height;
+
     this.platformGroup = this.physics.add.group();
     console.log(this);
     const positionX = this.game.config.width / 2;
     const positionY =
       this.game.config.height * gameOptions.firstPlatformPosition;
     console.log(positionX, positionY);
-    const platform = this.platformGroup.create(
-      positionX,
-      positionY,
-      "platform"
-    ).setScale(0.3, 1);
+    const platform = this.platformGroup
+      .create(positionX, positionY, "platform")
+      .setScale(0.3, 1);
     platform.setImmovable(true);
 
     for (let i = 0; i < 10; i++) {
@@ -41,10 +44,12 @@ export default class Game extends Phaser.Scene {
       fill: "#fff",
     });
 
-    this.textScore = this.add.text(this.game.config.width - 10, 10, "0", {
-      fontSize: "32px",
-      fill: "#fff",
-    }).setOrigin(1, 0);
+    this.textScore = this.add
+      .text(this.game.config.width - 10, 10, "0", {
+        fontSize: "32px",
+        fill: "#fff",
+      })
+      .setOrigin(1, 0);
 
     this.input.on("pointerdown", this.movePlayer, this);
     this.input.on("pointerup", this.stopPlayer, this);
@@ -52,7 +57,13 @@ export default class Game extends Phaser.Scene {
   }
 
   update() {
-    this.physics.world.collide(this.platformGroup, this.player, this.handleCollision, null, this);
+    this.physics.world.collide(
+      this.platformGroup,
+      this.player,
+      this.handleCollision,
+      null,
+      this
+    );
 
     // realizar un bucle en todas las plataformas
     this.platformGroup.getChildren().forEach(function (platform) {
@@ -105,6 +116,7 @@ export default class Game extends Phaser.Scene {
     const clickedRight = e.x > this.game.config.width / 2;
     const speedX = gameOptions.heroSpeed * (clickedRight ? 1 : -1);
     this.player.setVelocityX(speedX);
+    this.player.flipX = !clickedRight;
 
     if (this.firstMove) {
       this.firstMove = false;
